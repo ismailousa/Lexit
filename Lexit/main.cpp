@@ -4,6 +4,12 @@
 
 double rotate_y = 0;
 double rotate_x = 0;
+double player_x = -0.55;
+double player_z = -0.55;
+double zoom = 1.0;
+
+bool light = false;
+
 
 void specialKeys(int key, int x, int y) {
 
@@ -28,28 +34,41 @@ void specialKeys(int key, int x, int y) {
 
 void renderScene(void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_LIGHT0);
+
+	// Create light components
+	float ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	float diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+	float specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	float position[] = {0,0,0,1 };
+
+	// Assign created components to GL_LIGHT0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
 
 	glLoadIdentity();
 
 	// Rotate when user changes rotate_x and rotate_y
+	glScalef(zoom, zoom, zoom);
 	glRotatef(rotate_x, 1.0, 0.0, 0.0);
-	glRotatef(rotate_y, 0.0, 1.0, 0.0);
-
+	glRotatef(rotate_y, 0.0, 1.0, 0.0);	
 #pragma region Wall1
 
 	//FRONT
 	glBegin(GL_POLYGON);
-
-	glColor3f(1.0, 0.0, 0.0);     glVertex3f(0.7, -0.5, -0.7);      // P1 is red
-	glColor3f(0.0, 1.0, 0.0);     glVertex3f(0.7, -0.4, -0.7);      // P2 is green
-	glColor3f(0.0, 0.0, 1.0);     glVertex3f(-0.7, -0.4, -0.7);      // P3 is blue
-	glColor3f(1.0, 0.0, 1.0);     glVertex3f(-0.7, -0.5, -0.7);      // P4 is purple
+	glColor3f(1.0, 0.0, 1.0);
+	glVertex3f(0.7, -0.5, -0.7);      // P1 is red
+	glVertex3f(0.7, -0.4, -0.7);      // P2 is green
+	glVertex3f(-0.7, -0.4, -0.7);      // P3 is blue
+	glVertex3f(-0.7, -0.5, -0.7);      // P4 is purple
 
 	glEnd();
 
 	// White side - BACK
 	glBegin(GL_POLYGON);
-	glColor3f(1.0, 1.0, 1.0);
+	glColor3f(1.0, 0.0, 1.0);
 	glVertex3f(0.7, -0.5, -0.6);
 	glVertex3f(0.7, -0.4, -0.6);
 	glVertex3f(-0.7, -0.4, -0.6);
@@ -67,7 +86,7 @@ void renderScene(void) {
 
 	// Green side - LEFT
 	glBegin(GL_POLYGON);
-	glColor3f(0.0, 1.0, 0.0);
+	glColor3f(1.0, 0.0, 1.0);
 	glVertex3f(-0.7, -0.5, -0.6);
 	glVertex3f(-0.7, -0.4, -0.6);
 	glVertex3f(-0.7, -0.4, -0.7);
@@ -94,10 +113,10 @@ void renderScene(void) {
 
 	glBegin(GL_POLYGON);
 	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
+	glVertex3f(0.7, -0.5, -0.7);
+	glVertex3f(0.7, -0.5, 0.7);
+	glVertex3f(-0.7, -0.5, 0.7);
+	glVertex3f(-0.7, -0.5, -0.7);
 	glEnd();
 #pragma endregion
 #pragma region Wall2
@@ -145,23 +164,6 @@ void renderScene(void) {
 	glVertex3f(-0.7, -0.4, 0.7);
 	glVertex3f(-0.7, -0.4, 0.6);
 	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
-	glEnd();
 #pragma endregion
 #pragma region Wall3
 	//FRONT
@@ -207,23 +209,6 @@ void renderScene(void) {
 	glVertex3f(-0.6, -0.4, 0.7);
 	glVertex3f(-0.7, -0.4, 0.7);
 	glVertex3f(-0.7, -0.4, -0.7);
-	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
 	glEnd();
 #pragma endregion
 #pragma region Wall4
@@ -271,23 +256,6 @@ void renderScene(void) {
 	glVertex3f(0.7, -0.4, 0.7);
 	glVertex3f(0.7, -0.4, -0.7);
 	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
-	glEnd();
 #pragma endregion
 #pragma region Wall5
 	//FRONT
@@ -333,23 +301,6 @@ void renderScene(void) {
 	glVertex3f(-0.1, -0.4, -0.4);
 	glVertex3f(-0.5, -0.4, -0.4);
 	glVertex3f(-0.5, -0.4, -0.5);
-	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
 	glEnd();
 #pragma endregion
 #pragma region Wall6
@@ -443,23 +394,6 @@ void renderScene(void) {
 	glVertex3f(-0.5, -0.4, -0.1);
 	glVertex3f(-0.5, -0.4, -0.2);
 	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
-	glEnd();
 #pragma endregion
 #pragma region Wall8
 	//FRONT
@@ -505,23 +439,6 @@ void renderScene(void) {
 	glVertex3f(-0.1, -0.4, 0.5);
 	glVertex3f(-0.5, -0.4, 0.5);
 	glVertex3f(-0.5, -0.4, 0.4);
-	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
 	glEnd();
 #pragma endregion
 #pragma region Wall9
@@ -569,23 +486,6 @@ void renderScene(void) {
 	glVertex3f(0.5, -0.4, 0.5);
 	glVertex3f(0.5, -0.4, 0.4);
 	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
-	glEnd();
 #pragma endregion
 #pragma region Wall10
 	//FRONT
@@ -631,23 +531,6 @@ void renderScene(void) {
 	glVertex3f(-0.3, -0.4, -0.2);
 	glVertex3f(-0.5, -0.4, -0.2);
 	glVertex3f(-0.5, -0.4, -0.3);
-	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
 	glEnd();
 #pragma endregion
 #pragma region Wall11
@@ -695,23 +578,6 @@ void renderScene(void) {
 	glVertex3f(-0.6, -0.4, 0.1);
 	glVertex3f(-0.6, -0.4, 0.0);
 	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
-	glEnd();
 #pragma endregion
 #pragma region Wall12
 	//FRONT
@@ -757,23 +623,6 @@ void renderScene(void) {
 	glVertex3f(0.4, -0.4, 0.1);
 	glVertex3f(0.2, -0.4, 0.1);
 	glVertex3f(0.2, -0.4, 0.0);
-	glEnd();
-
-	// Red side - BOTTOM
-	/*glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(0.7, -0.5, -0.7);
-	glVertex3f(0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, 0.7);
-	glVertex3f(-0.7, -0.5, -075);
-	glEnd();*/
-
-	glBegin(GL_POLYGON);
-	glColor3ub(172, 163, 163);
-	glVertex3f(1.0, -0.5, -1.0);
-	glVertex3f(1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, 1.0);
-	glVertex3f(-1.0, -0.5, -1.0);
 	glEnd();
 #pragma endregion
 #pragma region Wall13
@@ -1282,10 +1131,41 @@ void renderScene(void) {
 	glVertex3f(0.4, -0.4, -0.2);
 	glEnd();
 #pragma endregion
-
+	glPushMatrix();
+	glTranslatef(player_x, -0.45, player_z);
+	glColor3f(1, 0, 0);
+	glutSolidSphere(0.04, 20, 20);
+	glPopMatrix();
 
 	glFlush();
 	glutSwapBuffers();
+}
+
+void keyboard(unsigned char key, int x, int y)
+{
+	if (key == 'a' || key == 'A')
+		player_x -= 0.1;
+	else if (key == 'd' || key == 'D')
+		player_x += 0.1;
+	else if (key == 'w' || key == 'W')
+		player_z += 0.1;
+	else if (key == 's' || key == 'S')
+		player_z -= 0.1;
+	else if (key == '1')
+		zoom -= 0.1;
+	else if (key == '2')
+		zoom += 0.1;
+	else if (key == 'l' || key == 'L')
+		if (light) {
+			light = false;
+			glEnable(GL_LIGHTING);
+		}
+		else {
+			light = true;
+			glDisable(GL_LIGHTING);
+		}
+
+	glutPostRedisplay();
 }
 
 int main(int argc, char **argv) {
@@ -1297,7 +1177,7 @@ int main(int argc, char **argv) {
 	glEnable(GL_DEPTH_TEST);
 	glutDisplayFunc(renderScene);
 	glutSpecialFunc(specialKeys);
-
+	glutKeyboardFunc(keyboard);
 	glutMainLoop();
 	return 0;
 }
